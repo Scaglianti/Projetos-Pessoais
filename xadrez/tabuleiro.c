@@ -3,6 +3,11 @@
 #include <stdbool.h>
 #include "tabuleiro.h"
 
+static int RCP = true;
+static int RLP = true;
+static int RCB = true;
+static int RLB = true;
+
 const char* nomes[] =
 {
     "",
@@ -20,6 +25,14 @@ const char* nomes[] =
     "a Rainha Preta",
     "o Rei Preto"
 };
+
+void libera(int* n1,int* n2,int *n3, int*n4)
+{
+    free(n1);
+    free(n2);
+    free(n3);
+    free(n4);   
+}
 
 int cores(int col,int lin)
 {
@@ -40,6 +53,7 @@ int cores(int col,int lin)
 void imprimirtabuleiro(int *pecas)
 {
     //Ler o tabuleiro e substituir pelo caractere correspondente
+    printf("--Novo Tabuleiro--\n");
     for(int i=0;i<8;i++)
     {
         printf("%d ", 8-i);
@@ -122,8 +136,8 @@ int *criartabuleiro()
 
     //Alocação manual do restante das peças
     pecas_numericas[0]     = pecas_numericas[7] = torreP; 
-    pecas_numericas[2]     = pecas_numericas[5] = cavaloP;
-    pecas_numericas[6]     = pecas_numericas[1] = bispoP;
+    pecas_numericas[2]     = pecas_numericas[5] = bispoP;
+    pecas_numericas[6]     = pecas_numericas[1] = cavaloP;
     pecas_numericas[3]     = rainhaP;
     pecas_numericas[4]     = reiP;
 
@@ -221,6 +235,187 @@ int verificadiagonal(int lin_ori, int col_ori, int lin_des, int col_des)
         return false;
     }
     return false; 
+}
+
+int verifica_roque(int lin_ori,int lin_des, int col_ori, int col_des, int*tab, int rei)
+{
+    if(reiB)
+    {
+        if(lin_ori == 7 && col_ori == 4)
+        {
+            if(RCB == true && lin_ori == lin_des && col_des == col_ori + 2)
+            {
+                return true;
+            }
+            else if(RLB == true && lin_ori == lin_des && col_des == col_ori - 2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        return false;
+    }
+    else if(reiP)
+    {
+        if(lin_ori == 0 && col_ori == 4)
+        {
+            if(RCB == true && lin_ori == lin_des && col_des == col_ori + 2)
+            {
+                return true;
+            }
+            else if(RLB == true && lin_ori == lin_des && col_des == col_ori - 2)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        return false;
+    }
+    else
+    {
+        return false;
+    }
+}
+int roque(int lin_ori,int col_ori, int lin_des, int col_des, int* tab, int rei)
+{
+    if(rei == reiB)
+    {
+        int* diag = peca_diagonal(lin_ori,col_ori,tab,reiB);
+        int* horiz = peca_horizontal(lin_ori,col_ori,tab,reiB);
+        int* vert = peca_vertical(lin_ori,col_ori,tab,reiB);
+        int* cav = peca_cavalo(lin_ori, col_ori, tab);
+
+        if(verifica_ameaca_rei(horiz,diag,vert,cav,reiB))
+        {
+            if(lin_ori == 7 && col_ori == 4 && horizontal(lin_ori,col_ori,col_des,tab))
+            {
+                if(lin_des == 7 && col_des == 6)
+                {
+                    int* diagRC1 = peca_diagonal(lin_des,5,tab,reiB);
+                    int* horizRC1 = peca_horizontal(lin_des,5,tab,reiB);
+                    int* vertRC1 = peca_vertical(lin_des,5,tab,reiB);
+                    int* cavRC1 = peca_cavalo(lin_des, 5, tab);
+
+                    int* diagRC2 = peca_diagonal(lin_des,6,tab,reiB);
+                    int* horizRC2 = peca_horizontal(lin_des,6,tab,reiB);
+                    int* vertRC2 = peca_vertical(lin_des,6,tab,reiB);
+                    int* cavRC2 = peca_cavalo(lin_des, 6, tab);
+                    if(RCB == true && verifica_ameaca_rei(horizRC1,diagRC1,vertRC1,cavRC1,reiB) && verifica_ameaca_rei(horizRC2,diagRC2,vertRC2,cavRC2,reiB))
+                    {
+                        RLB = false;
+                        RCB = false;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if(lin_des == 7 && col_des == 2)
+                {
+                    int* diagRL1 = peca_diagonal(lin_des,3,tab,reiB);
+                    int* horizRL1 = peca_horizontal(lin_des,3,tab,reiB);
+                    int* vertRL1 = peca_vertical(lin_des,3,tab,reiB);
+                    int* cavRL1 = peca_cavalo(lin_des, 3, tab);
+
+                    int* diagRL2 = peca_diagonal(lin_des,2,tab,reiB);
+                    int* horizRL2 = peca_horizontal(lin_des,2,tab,reiB);
+                    int* vertRL2 = peca_vertical(lin_des,2,tab,reiB);
+                    int* cavRL2 = peca_cavalo(lin_des, 2, tab);
+                    if(RLB == true && verifica_ameaca_rei(horizRL1,diagRL1,vertRL1,cavRL1,reiB) && verifica_ameaca_rei(horizRL2,diagRL2,vertRL2,cavRL2,reiB))
+                    {
+                        RCB = false;
+                        RLB = false;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else 
+                return false;
+            }   
+            else
+            return false;
+        }
+        else
+        return false;
+    }
+    else if(rei == reiP)
+    {
+        int* diag = peca_diagonal(lin_ori,col_ori,tab,reiP);
+        int* horiz = peca_horizontal(lin_ori,col_ori,tab,reiP);
+        int* vert = peca_vertical(lin_ori,col_ori,tab,reiP);
+        int* cav = peca_cavalo(lin_ori, col_ori, tab);
+        if(verifica_ameaca_rei(horiz,diag,vert,cav,reiP))
+        {
+            if(lin_ori == 0 && col_ori == 4 && horizontal(lin_ori,col_ori,col_des,tab))
+            {
+                if(lin_des == 0 && col_des == 6)
+                {
+                    int* diagRC1 = peca_diagonal(lin_des,5,tab,reiP);
+                    int* horizRC1 = peca_horizontal(lin_des,5,tab,reiP);
+                    int* vertRC1 = peca_vertical(lin_des,5,tab,reiP);
+                    int* cavRC1 = peca_cavalo(lin_des, 5, tab);
+
+                    int* diagRC2 = peca_diagonal(lin_des,6,tab,reiP);
+                    int* horizRC2 = peca_horizontal(lin_des,6,tab,reiP);
+                    int* vertRC2 = peca_vertical(lin_des,6,tab,reiP);
+                    int* cavRC2 = peca_cavalo(lin_des, 6, tab);
+
+                    if(RCP == true && verifica_ameaca_rei(horizRC1,diagRC1,vertRC1,cavRC1,reiP) && verifica_ameaca_rei(horizRC2,diagRC2,vertRC2,cavRC2,reiP))
+                    {
+                        RLP = false;
+                        RCP = false;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if(lin_des == 0 && col_des == 2)
+                {
+                    int* diagRL1 = peca_diagonal(lin_des,3,tab,reiP);
+                    int* horizRL1 = peca_horizontal(lin_des,3,tab,reiP);
+                    int* vertRL1 = peca_vertical(lin_des,3,tab,reiP);
+                    int* cavRL1 = peca_cavalo(lin_des, 3, tab);
+
+                    int* diagRL2 = peca_diagonal(lin_des,2,tab,reiP);
+                    int* horizRL2 = peca_horizontal(lin_des,2,tab,reiP);
+                    int* vertRL2 = peca_vertical(lin_des,2,tab,reiP);
+                    int* cavRL2 = peca_cavalo(lin_des, 2, tab);
+                    if(RLP == true && verifica_ameaca_rei(horizRL1,diagRL1,vertRL1,cavRL1,reiP) && verifica_ameaca_rei(horizRL2,diagRL2,vertRL2,cavRL2,reiP))
+                    {
+                        RCP = false;
+                        RLP = false;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                return false;
+            }
+            else
+            return false;
+        }
+        else
+        return false;
+    }
+    else
+    return false;
 }
 
 int* peca_horizontal(int lin, int col, int *tab, int rei)
@@ -347,51 +542,26 @@ int* peca_vertical(int lin, int col, int *tab, int rei)
 }
 int* peca_cavalo(int lin, int col, int* tab)
 {
-    int* pecas = malloc(sizeof(int) * 8);
+    int* pecas = calloc(8, sizeof(int));
 
-    //Movimento para baixo e esquerda
-    if(tab[(lin-1)*8+(col+2)] == 3 || tab[(lin-1)*8+(col+2)] == 9)
+    int movimentos[8][2] = {
+        {-1, +2}, {-1, -2},
+        {+1, +2}, {+1, -2},
+        {-2, +1}, {-2, -1},
+        {+2, +1}, {+2, -1}
+    };
+
+    for(int k = 0; k < 8; k++)
     {
-        pecas[0] = tab[(lin-1)*8+(col+2)];
-    }
-    //Movimento para baixo e direita
-    else if(tab[(lin-1)*8+(col-2)] == 3 || tab[(lin-1)*8+(col-2)] == 9)
-    {
-        pecas[1] = tab[(lin-1)*8+(col-2)];
-    }
-    //Movimento para cima e esquerda
-    else if(tab[(lin+1)*8+(col+2)] == 3 || tab[(lin+1)*8+(col+2)] == 9)
-    {
-        pecas[2] = tab[(lin+1)*8+(col+2)];
-    }
-    //Movimento para cima e direita
-    else if(tab[(lin+1)*8+(col-2)] == 3 || tab[(lin+1)*8+(col-2)] == 9)
-    {
-        pecas[3] = tab[(lin+1)*8+(col-2)];
-    }
-    //Movimento para baixo e esquerda
-    else if(tab[(lin-2)*8+(col+1)] == 3 || tab[(lin-2)*8+(col+1)] == 9)
-    {
-        pecas[4] = tab[(lin-2)*8+(col+1)];
-    }
-    //Movimento para baixo e direita
-    else if(tab[(lin-2)*8+(col-1)] == 3 || tab[(lin-2)*8+(col-1)] == 9)
-    {
-        pecas[5] = tab[(lin-2)*8+(col-1)];
-    }
-    //Movimento para cima e esquerda
-    else if(tab[(lin+2)*8+(col+1)] == 3 || tab[(lin+2)*8+(col+1)] == 9)
-    {
-        pecas[6] = tab[(lin+2)*8+(col+1)];
-    }
-    //Movimento para cima e direita
-    else if(tab[(lin+2)*8+(col-1)] == 3 || tab[(lin+2)*8+(col-1)] == 9)
-    {
-        pecas[7] = tab[(lin+2)*8+(col-1)];
-    }
-    else
-    {
-        return false;
+        int nl = lin + movimentos[k][0];
+        int nc = col + movimentos[k][1];
+
+        if(nl >= 0 && nl < 8 && nc >= 0 && nc < 8)
+        {
+            int p = tab[nl*8+nc];
+            if(p == cavaloB || p == cavaloP)
+                pecas[k] = p;
+        }
     }
 
     return pecas;
@@ -546,7 +716,7 @@ int peao_protege(int lin,int col, int* tab, int peao)
 {
     if(peao == peaoB)
     {
-        if(tab[(lin-1)*8+(col-1)]>=8 && tab[(lin+1)*8+(col+1) == reiB])
+        if(tab[(lin-1)*8+(col-1)]>=8 && tab[(lin+1)*8+(col+1)] == reiB)
         {
             return true;
         }
@@ -807,7 +977,7 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
             }
         }
     }
-    if(rei == reiP)
+    else if(rei == reiP)
     {
         if(peca == torreP)
         {
@@ -1019,6 +1189,8 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
             }
         }
     }
+    else
+    return false;
 }
 
 int horizontal(int lin_ori, int col_ori, int col_des, int *tab)
@@ -1892,6 +2064,10 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
             {
                 validar = true;
             }
+            else if(verifica_roque(lin_ori,lin_des,col_ori,col_des,tabuleiro,reiB) && roque(lin_ori,col_ori,lin_des,col_des,tabuleiro,reiB))
+            {
+                validar = true;
+            }
             else
             {
                 return false;
@@ -1951,6 +2127,10 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
             {
                 validar = true;
             }
+            else if(verifica_roque(lin_ori,lin_des,col_ori,col_des,tabuleiro,reiB) && roque(lin_ori,col_ori,lin_des,col_des,tabuleiro,reiB))
+            {
+                validar = true;
+            }
             else
             {
                 return false;
@@ -2004,6 +2184,12 @@ int verificapeca(int* tab, int lin_ori, int col_ori)
 }
 void movimento(int *tab, int rodada)
 {
+    int* diag = NULL;
+    int* horiz = NULL;
+    int* vert = NULL;
+    int* cav = NULL;
+
+
     //Realizar o movimento proposto pelo jogador
     int lin_ori,col_ori,lin_des,col_des;
     int cor;
@@ -2021,6 +2207,7 @@ void movimento(int *tab, int rodada)
 
             if(peca == quadradoB || peca == quadradoP)
             {
+                printf("\n---------Aviso---------\n");
                 printf("Você não pode movimentar uma casa vazia! Tente novamente.\n");
                 continue;
             }
@@ -2031,19 +2218,22 @@ void movimento(int *tab, int rodada)
             }
             else if(!verifica_ameaca_servo(lin_ori,col_ori,tab,peca))
             {
+                printf("\n---------Aviso---------\n");
                 printf("Você não pode mover uma peça que protege o rei!");
                 continue;
             }
-            else if(rodada%2 == 0 && peca >= 8)
+            /*else if(rodada%2 == 0 && peca >= 8)
             {
+                printf("\n---------Aviso---------\n");
                 printf("Você tentou movimentar uma peça preta na vez das brancas, tente novamente!\n");
                 continue;
             }
             else if(rodada%2 != 0 && peca < 8)
             {
+                printf("\n---------Aviso---------\n");
                 printf("Você tentou movimentar uma peça branca na vez das pretas, tente novamente!\n");
                 continue;
-            }
+            } */
             else
             {
                 validar = false;
@@ -2054,6 +2244,7 @@ void movimento(int *tab, int rodada)
 
         if(cancelar)
         {
+            printf("\n---------Aviso---------\n");
             printf("Ação cancelada\n\n");
             continue;
         }
@@ -2066,6 +2257,11 @@ void movimento(int *tab, int rodada)
             lermovimento(&col_des,&lin_des);
             int peca = tab[lin_ori*8 + col_ori];
             
+            int* diag = peca_diagonal(lin_des,col_des,tab,reiB);
+            int* horiz = peca_horizontal(lin_des,col_des,tab,reiB);
+            int* vert = peca_vertical(lin_des,col_des,tab,reiB);
+            int* cav = peca_cavalo(lin_des, col_des, tab);
+
             if(lin_des == -1 && col_des == -1)
             {
                 cancelar = true;
@@ -2073,7 +2269,11 @@ void movimento(int *tab, int rodada)
             }
             else if(!sistema(peca, col_ori, lin_ori, lin_des, col_des, tab))
             {
+                printf("\n---------Aviso---------\n");
                 printf("Ação inválida!! Tente novamente.\n");
+                printf("Funcão verifica roque: %d\n",verifica_roque(lin_ori,lin_des,col_ori,col_des,tab,reiB));
+                printf("Funcão roque: %d\n", roque(lin_ori,col_ori,lin_des,col_des,tab,reiB));
+                printf("Funcão verifica ameaça rei: %d\n",verifica_ameaca_rei(horiz,diag,vert,cav,reiB));
             }
             else
             validar = false;
@@ -2081,10 +2281,14 @@ void movimento(int *tab, int rodada)
 
         if(cancelar)
         {
+            printf("\n---------Aviso---------\n");
             printf("Ação cancelada\n\n");
             continue;
         } 
-            
+        free(diag);
+        free(horiz);
+        free(vert);
+        free(cav);
         break;
     }
     
@@ -2092,6 +2296,4 @@ void movimento(int *tab, int rodada)
     cor = cores(col_ori,lin_ori);
     tab[lin_des*8+col_des] = tab[lin_ori*8+col_ori];
     tab[lin_ori*8+col_ori] = cor;
-
-    imprimirtabuleiro(tab);
 }
