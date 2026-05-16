@@ -295,6 +295,7 @@ int roque(int lin_ori,int col_ori, int lin_des, int col_des, int* tab, int rei)
 
         if(verifica_ameaca_rei(horiz,diag,vert,cav,reiB))
         {
+            libera(diag,horiz,vert,cav);
             if(lin_ori == 7 && col_ori == 4 && horizontal(lin_ori,col_ori,col_des,tab))
             {
                 if(lin_des == 7 && col_des == 6)
@@ -312,10 +313,14 @@ int roque(int lin_ori,int col_ori, int lin_des, int col_des, int* tab, int rei)
                     {
                         RLB = false;
                         RCB = false;
+                        libera(diagRC1,horizRC1,vertRC1,cavRC1);
+                        libera(diagRC2,horizRC2,vertRC2,cavRC2);
                         return true;
                     }
                     else
                     {
+                        libera(diagRC1,horizRC1,vertRC1,cavRC1);
+                        libera(diagRC2,horizRC2,vertRC2,cavRC2);
                         return false;
                     }
                 }
@@ -334,10 +339,14 @@ int roque(int lin_ori,int col_ori, int lin_des, int col_des, int* tab, int rei)
                     {
                         RCB = false;
                         RLB = false;
+                        libera(diagRL1,horizRL1,vertRL1,cavRL1);
+                        libera(diagRL2,horizRL2,vertRL2,cavRL2);
                         return true;
                     }
                     else
                     {
+                        libera(diagRL1,horizRL1,vertRL1,cavRL1);
+                        libera(diagRL2,horizRL2,vertRL2,cavRL2);
                         return false;
                     }
                 }
@@ -348,7 +357,11 @@ int roque(int lin_ori,int col_ori, int lin_des, int col_des, int* tab, int rei)
             return false;
         }
         else
-        return false;
+        {
+            libera(diag,horiz,vert,cav);
+            return false;
+        }
+        
     }
     else if(rei == reiP)
     {
@@ -358,6 +371,7 @@ int roque(int lin_ori,int col_ori, int lin_des, int col_des, int* tab, int rei)
         int* cav = peca_cavalo(lin_ori, col_ori, tab);
         if(verifica_ameaca_rei(horiz,diag,vert,cav,reiP))
         {
+            libera(diag,horiz,vert,cav);
             if(lin_ori == 0 && col_ori == 4 && horizontal(lin_ori,col_ori,col_des,tab))
             {
                 if(lin_des == 0 && col_des == 6)
@@ -374,12 +388,16 @@ int roque(int lin_ori,int col_ori, int lin_des, int col_des, int* tab, int rei)
 
                     if(RCP == true && verifica_ameaca_rei(horizRC1,diagRC1,vertRC1,cavRC1,reiP) && verifica_ameaca_rei(horizRC2,diagRC2,vertRC2,cavRC2,reiP))
                     {
+                        libera(diagRC1,horizRC1,vertRC1,cavRC1);
+                        libera(diagRC2,horizRC2,vertRC2,cavRC2);
                         RLP = false;
                         RCP = false;
                         return true;
                     }
                     else
                     {
+                        libera(diagRC1,horizRC1,vertRC1,cavRC1);
+                        libera(diagRC2,horizRC2,vertRC2,cavRC2);
                         return false;
                     }
                 }
@@ -398,10 +416,14 @@ int roque(int lin_ori,int col_ori, int lin_des, int col_des, int* tab, int rei)
                     {
                         RCP = false;
                         RLP = false;
+                        libera(diagRL1,horizRL1,vertRL1,cavRL1);
+                        libera(diagRL2,horizRL2,vertRL2,cavRL2);
                         return true;
                     }
                     else
                     {
+                        libera(diagRL1,horizRL1,vertRL1,cavRL1);
+                        libera(diagRL2,horizRL2,vertRL2,cavRL2);
                         return false;
                     }
                 }
@@ -412,7 +434,10 @@ int roque(int lin_ori,int col_ori, int lin_des, int col_des, int* tab, int rei)
             return false;
         }
         else
-        return false;
+        {
+            libera(diag,horiz,vert,cav);
+            return false;
+        }
     }
     else
     return false;
@@ -640,7 +665,7 @@ int verifica_ameaca_rei(int* horizontal, int* diagonal, int*vertical, int* caval
             return true;
         }
     }
-    if(rei == reiP)
+    else if(rei == reiP)
     {
         if(vertical[0]        ==  torreB || vertical[0]   == rainhaB)
         {
@@ -711,6 +736,8 @@ int verifica_ameaca_rei(int* horizontal, int* diagonal, int*vertical, int* caval
             return true;
         }
     }
+    else
+    return false;
 }
 int peao_protege(int lin,int col, int* tab, int peao)
 {
@@ -731,7 +758,7 @@ int peao_protege(int lin,int col, int* tab, int peao)
     }
     else if(peao == peaoP)
     {
-        if(tab[(lin-1)*8+(col-1)]>=8 && tab[(lin+1)*8+(col+1) == reiP])
+        if(tab[(lin-1)*8+(col-1)]>=8 && tab[(lin+1)*8+(col+1)] == reiP)
         {
             return true;
         }
@@ -764,45 +791,54 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
     int* diagonal = peca_diagonal(lin,col,tab,rei);
     int* horizontal = peca_horizontal(lin,col,tab,rei);
     int* vertical = peca_vertical(lin,col,tab,rei);
-
+    
     if(rei == reiB)
     {
         if(peca == torreB)
         {
             if((vertical[0]        ==  torreP || vertical[0]   == rainhaP) && vertical[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Cima;
             }
             else if((vertical[1]   ==  torreP || vertical[1]   == rainhaP) && vertical[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Baixo;
             }
             else if((horizontal[0] ==  torreP || horizontal[0] == rainhaP) && horizontal[1] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Direita;
             }
             else if((horizontal[1] ==  torreP || horizontal[1] == rainhaP) && horizontal[0] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Esquerda;
             }
             else if((diagonal[0]   ==  bispoP || diagonal[0]   == rainhaP) && diagonal[2]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[1]   ==  bispoP || diagonal[1]   == rainhaP) && diagonal[3]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[2]   ==  bispoP || diagonal[2]   == rainhaP) && diagonal[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[3]   ==  bispoP || diagonal[3]   == rainhaP) && diagonal[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else
         {
+            libera(diagonal,horizontal, vertical, NULL);
             return true;
         }
         }
@@ -810,30 +846,37 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
         {
             if((vertical[0]        ==  torreP || vertical[0]   == rainhaP) && vertical[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((vertical[1]   ==  torreP || vertical[1]   == rainhaP) && vertical[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[0] ==  torreP || horizontal[0] == rainhaP) && horizontal[1] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[1] ==  torreP || horizontal[1] == rainhaP) && horizontal[0] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[0]   ==  bispoP || diagonal[0]   == rainhaP) && diagonal[2]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[1]   ==  bispoP || diagonal[1]   == rainhaP) && diagonal[3]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[2]   ==  bispoP || diagonal[2]   == rainhaP) && diagonal[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 if(peao_protege(lin,col, tab, peca))
                 {
                     return DC_Direita;
@@ -845,6 +888,7 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
             }
             else if((diagonal[3]   ==  bispoP || diagonal[3]   == rainhaP) && diagonal[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 if(peao_protege(lin,col, tab, peca))
                 {
                     return DC_Direita;
@@ -855,85 +899,104 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
                 }
             }
             else
-        {
-            return true;
-        }
+            {
+                libera(diagonal,horizontal, vertical, NULL);
+                return true;
+            }
         } 
         else if(peca == bispoB)
         {
             if((vertical[0]        ==  torreP || vertical[0]   == rainhaP) && vertical[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((vertical[1]   ==  torreP || vertical[1]   == rainhaP) && vertical[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[0] ==  torreP || horizontal[0] == rainhaP) && horizontal[1] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[1] ==  torreP || horizontal[1] == rainhaP) && horizontal[0] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[0]   ==  bispoP || diagonal[0]   == rainhaP) && diagonal[2]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DB_Esquerda;
             }
             else if((diagonal[1]   ==  bispoP || diagonal[1]   == rainhaP) && diagonal[3]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DB_Direita;
             }
             else if((diagonal[2]   ==  bispoP || diagonal[2]   == rainhaP) && diagonal[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DC_Direita;
             }
             else if((diagonal[3]   ==  bispoP || diagonal[3]   == rainhaP) && diagonal[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DC_Esquerda;
             }
             else
-        {
-            return true;
-        }
+            {
+                libera(diagonal,horizontal, vertical, NULL);
+                return true;
+            }
         }
         else if(peca == rainhaB)
         {
             if((vertical[0]        ==  torreP || vertical[0]   == rainhaP) && vertical[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Cima;
             }
             else if((vertical[1]   ==  torreP || vertical[1]   == rainhaP) && vertical[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Baixo;
             }
             else if((horizontal[0] ==  torreP || horizontal[0] == rainhaP) && horizontal[1] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Direita;
             }
             else if((horizontal[1] ==  torreP || horizontal[1] == rainhaP) && horizontal[0] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Esquerda;
             }
             else if((diagonal[0]   ==  bispoP || diagonal[0]   == rainhaP) && diagonal[2]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DB_Esquerda;
             }
             else if((diagonal[1]   ==  bispoP || diagonal[1]   == rainhaP) && diagonal[3]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DB_Direita;
             }
             else if((diagonal[2]   ==  bispoP || diagonal[2]   == rainhaP) && diagonal[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DC_Direita;
             }
             else if((diagonal[3]   ==  bispoP || diagonal[3]   == rainhaP) && diagonal[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DC_Esquerda;
             }
             else
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return true;
             }
         }
@@ -941,38 +1004,47 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
         {
             if((vertical[0]        ==  torreP || vertical[0]   == rainhaP) && vertical[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((vertical[1]   ==  torreP || vertical[1]   == rainhaP) && vertical[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[0] ==  torreP || horizontal[0] == rainhaP) && horizontal[1] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[1] ==  torreP || horizontal[1] == rainhaP) && horizontal[0] == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[0]   ==  bispoP || diagonal[0]   == rainhaP) && diagonal[2]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[1]   ==  bispoP || diagonal[1]   == rainhaP) && diagonal[3]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[2]   ==  bispoP || diagonal[2]   == rainhaP) && diagonal[0]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[3]   ==  bispoP || diagonal[3]   == rainhaP) && diagonal[1]   == reiB)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return true;
             }
         }
@@ -983,38 +1055,47 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
         {
             if((vertical[0]        ==  torreB || vertical[0]   == rainhaB) && vertical[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Cima;
             }
             else if((vertical[1]   ==  torreB || vertical[1]   == rainhaB) && vertical[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Baixo;
             }
             else if((horizontal[0] ==  torreB || horizontal[0] == rainhaB) && horizontal[1] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Direita;
             }
             else if((horizontal[1] ==  torreB || horizontal[1] == rainhaB) && horizontal[0] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Esquerda;
             }
             else if((diagonal[0]   ==  bispoB || diagonal[0]   == rainhaB) && diagonal[2]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[1]   ==  bispoB || diagonal[1]   == rainhaB) && diagonal[3]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[2]   ==  bispoB || diagonal[2]   == rainhaB) && diagonal[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[3]   ==  bispoB || diagonal[3]   == rainhaB) && diagonal[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return true;
             }
         }
@@ -1022,22 +1103,27 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
         {
             if((vertical[0]        ==  torreB || vertical[0]   == rainhaB) && vertical[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((vertical[1]   ==  torreB || vertical[1]   == rainhaB) && vertical[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[0] ==  torreB || horizontal[0] == rainhaB) && horizontal[1] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[1] ==  torreB || horizontal[1] == rainhaB) && horizontal[0] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[0]   ==  bispoB || diagonal[0]   == rainhaB) && diagonal[2]   == reiP && peao_protege(lin,col,tab,peca))
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 if(peao_protege(lin,col, tab, peca))
                 {
                     return DB_Direita;
@@ -1049,6 +1135,7 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
             }
             else if((diagonal[1]   ==  bispoB || diagonal[1]   == rainhaB) && diagonal[3]   == reiP && peao_protege(lin,col,tab,peca))
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 if(peao_protege(lin,col, tab, peca))
                 {
                     return DB_Direita;
@@ -1060,137 +1147,170 @@ int verifica_ameaca_servo(int lin, int col, int* tab, int peca)
             }
             else if((diagonal[2]   ==  bispoB || diagonal[2]   == rainhaB) && diagonal[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[3]   ==  bispoB || diagonal[3]   == rainhaB) && diagonal[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else
-        {
-            return true;
-        }
+            {
+                libera(diagonal,horizontal, vertical, NULL);
+                return true;
+            }
         } 
         else if(peca == bispoP)
         {
             if((vertical[0]        ==  torreB || vertical[0]   == rainhaB) && vertical[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((vertical[1]   ==  torreB || vertical[1]   == rainhaB) && vertical[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[0] ==  torreB || horizontal[0] == rainhaB) && horizontal[1] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[1] ==  torreB || horizontal[1] == rainhaB) && horizontal[0] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[0]   ==  bispoB || diagonal[0]   == rainhaB) && diagonal[2]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DB_Esquerda;
             }
             else if((diagonal[1]   ==  bispoB || diagonal[1]   == rainhaB) && diagonal[3]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DB_Direita;
             }
             else if((diagonal[2]   ==  bispoB || diagonal[2]   == rainhaB) && diagonal[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DC_Direita;
             }
             else if((diagonal[3]   ==  bispoB || diagonal[3]   == rainhaB) && diagonal[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DC_Esquerda;
             }
             else
-        {
-            return true;
-        }
+            {
+                libera(diagonal,horizontal, vertical, NULL);
+                return true;
+            }
         }
         else if(peca == rainhaP)
         {
             if((vertical[0]        ==  torreB || vertical[0]   == rainhaB) && vertical[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Cima;
             }
             else if((vertical[1]   ==  torreB || vertical[1]   == rainhaB) && vertical[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Baixo;
             }
             else if((horizontal[0] ==  torreB || horizontal[0] == rainhaB) && horizontal[1] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Direita;
             }
             else if((horizontal[1] ==  torreB || horizontal[1] == rainhaB) && horizontal[0] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return Esquerda;
             }
             else if((diagonal[0]   ==  bispoB || diagonal[0]   == rainhaB) && diagonal[2]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DB_Esquerda;
             }
             else if((diagonal[1]   ==  bispoB || diagonal[1]   == rainhaB) && diagonal[3]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DB_Direita;
             }
             else if((diagonal[2]   ==  bispoB || diagonal[2]   == rainhaB) && diagonal[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DC_Direita;
             }
             else if((diagonal[3]   ==  bispoB || diagonal[3]   == rainhaB) && diagonal[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return DB_Esquerda;
             }
             else
-        {
-            return true;
-        }
+            {
+                libera(diagonal,horizontal, vertical, NULL);
+                return true;
+            }
         }
         else
         {
             if((vertical[0]        ==  torreB || vertical[0]   == rainhaB) && vertical[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((vertical[1]   ==  torreB || vertical[1]   == rainhaB) && vertical[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[0] ==  torreB || horizontal[0] == rainhaB) && horizontal[1] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((horizontal[1] ==  torreB || horizontal[1] == rainhaB) && horizontal[0] == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[0]   ==  bispoB || diagonal[0]   == rainhaB) && diagonal[2]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[1]   ==  bispoB || diagonal[1]   == rainhaB) && diagonal[3]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[2]   ==  bispoB || diagonal[2]   == rainhaB) && diagonal[0]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else if((diagonal[3]   ==  bispoB || diagonal[3]   == rainhaB) && diagonal[1]   == reiP)
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return false;
             }
             else
             {
+                libera(diagonal,horizontal, vertical, NULL);
                 return true;
             }
         }
     }
     else
-    return false;
+    {
+        libera(diagonal,horizontal, vertical, NULL);
+        return false;
+    }
 }
 
 int horizontal(int lin_ori, int col_ori, int col_des, int *tab)
@@ -1347,6 +1467,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
     switch(peca)
     {
         case peaoP:
+        libera(diag,horiz,vert,cav);
         if(ameaca > 1)
         {
             if(ameaca == DB_Direita && lin_des == lin_ori + 1 && col_des == col_ori + 1)
@@ -1385,6 +1506,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case peaoB:
+        libera(diag,horiz,vert,cav);
         if(ameaca > 1)
         {
             if(ameaca == DC_Direita && lin_des == lin_ori - 1 && col_des == col_ori + 1)
@@ -1423,6 +1545,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case cavaloB:
+        libera(diag,horiz,vert,cav);
         if(tabuleiro[lin_des*8+col_des] <= 1 || tabuleiro[lin_des*8+col_des] >= 8)
         {
             //Movimento para Baixo e Esquerda ⬐
@@ -1477,6 +1600,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case cavaloP:
+        libera(diag,horiz,vert,cav);
         if(tabuleiro[lin_des*8+col_des] < 8)
         {
             //Movimento para Baixo e Esquerda ⬐
@@ -1531,6 +1655,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case bispoB:
+        libera(diag,horiz,vert,cav);
         if(ameaca > 1)
         {
             if(ameaca == DB_Direita && lin_des == lin_ori - 1 && col_des == col_ori + 1)
@@ -1593,6 +1718,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case bispoP:
+        libera(diag,horiz,vert,cav);
         if(ameaca > 1)
         {
             if(ameaca == DB_Direita && lin_des == lin_ori - 1 && col_des == col_ori + 1)
@@ -1655,6 +1781,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case torreB:
+        libera(diag,horiz,vert,cav);
         if(ameaca > 1)
         {
             if(ameaca == Direita && lin_ori == lin_des && col_des == col_ori + 1)
@@ -1723,6 +1850,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case torreP:
+        libera(diag,horiz,vert,cav);
         if(ameaca > 1)
         {
             if(ameaca == Direita && lin_ori == lin_des && col_des == col_ori + 1)
@@ -1787,6 +1915,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case rainhaB:
+        libera(diag,horiz,vert,cav);
         if(ameaca > 1)
         {
             if(ameaca == DB_Direita && lin_des == lin_ori - 1 && col_des == col_ori + 1)
@@ -1902,6 +2031,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         case rainhaP:
+        libera(diag,horiz,vert,cav);
         if(ameaca > 1)
         {
             if(ameaca == DB_Direita && lin_des == lin_ori - 1 && col_des == col_ori + 1)
@@ -2019,9 +2149,10 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         case reiB:
         if(!verifica_ameaca_rei(horiz,diag,vert,cav,reiB))
         {
+            libera(diag,horiz,vert,cav);
             return false;
         }
-
+        libera(diag,horiz,vert,cav);
         if(tabuleiro[lin_des*8+col_des] <= 1 || tabuleiro[lin_des*8+col_des] >= 8)
         {
             //Movimento para Cima ⬆
@@ -2082,9 +2213,10 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         case reiP:
         if(!verifica_ameaca_rei(horiz,diag,vert,cav,reiP))
         {
+            libera(diag,horiz,vert,cav);
             return false;
         }
-
+        libera(diag,horiz,vert,cav);
         if(tabuleiro[lin_des*8+col_des] < 8)
         {
             //Movimento para Cima ⬆
@@ -2143,10 +2275,7 @@ int sistema(int peca, int col_ori, int lin_ori, int lin_des, int col_des, int *t
         break;
     }
    
-    free(diag);
-    free(cav);
-    free(vert);
-    free(horiz);
+    libera(diag,horiz,vert,cav);
     return validar;
 }
 
@@ -2222,7 +2351,7 @@ void movimento(int *tab, int rodada)
                 printf("Você não pode mover uma peça que protege o rei!");
                 continue;
             }
-            /*else if(rodada%2 == 0 && peca >= 8)
+            else if(rodada%2 == 0 && peca >= 8)
             {
                 printf("\n---------Aviso---------\n");
                 printf("Você tentou movimentar uma peça preta na vez das brancas, tente novamente!\n");
@@ -2233,7 +2362,7 @@ void movimento(int *tab, int rodada)
                 printf("\n---------Aviso---------\n");
                 printf("Você tentou movimentar uma peça branca na vez das pretas, tente novamente!\n");
                 continue;
-            } */
+            }
             else
             {
                 validar = false;
@@ -2262,21 +2391,26 @@ void movimento(int *tab, int rodada)
             int* vert = peca_vertical(lin_des,col_des,tab,reiB);
             int* cav = peca_cavalo(lin_des, col_des, tab);
 
+            int resultado_sistema = sistema(peca, col_ori, lin_ori, lin_des, col_des, tab);
+            int resultado_rei = verifica_ameaca_rei(horiz, diag, vert, cav, reiB);
+
             if(lin_des == -1 && col_des == -1)
             {
+                libera(diag,horiz,vert,cav);
                 cancelar = true;
                 break;
             }
-            else if(!sistema(peca, col_ori, lin_ori, lin_des, col_des, tab))
+            else if(!resultado_sistema)
             {
                 printf("\n---------Aviso---------\n");
                 printf("Ação inválida!! Tente novamente.\n");
                 printf("Funcão verifica roque: %d\n",verifica_roque(lin_ori,lin_des,col_ori,col_des,tab,reiB));
                 printf("Funcão roque: %d\n", roque(lin_ori,col_ori,lin_des,col_des,tab,reiB));
-                printf("Funcão verifica ameaça rei: %d\n",verifica_ameaca_rei(horiz,diag,vert,cav,reiB));
+                printf("Funcão verifica ameaça rei: %d\n",resultado_rei);
             }
             else
             validar = false;
+            libera(diag,horiz,vert,cav);
         }
 
         if(cancelar)
@@ -2285,10 +2419,6 @@ void movimento(int *tab, int rodada)
             printf("Ação cancelada\n\n");
             continue;
         } 
-        free(diag);
-        free(horiz);
-        free(vert);
-        free(cav);
         break;
     }
     
